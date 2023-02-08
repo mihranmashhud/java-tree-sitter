@@ -95,7 +95,7 @@ def build(repositories, output_path="libjava-tree-sitter", arch=None, verbose=Fa
             elif platform.system() == "Darwin":
                 include_dirs.append(os.path.join(os.environ["JAVA_HOME"], "include", "darwin"))
             elif platform.system() == "Windows":
-                include_dirs.append(os.path.join(os.environ["JAVA_HOME"], "include", "windows"))
+                include_dirs.append(os.path.join(os.environ["JAVA_HOME"], "include", "win32"))
 
             object_paths.append(
                 compiler.compile(
