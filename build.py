@@ -14,7 +14,12 @@ def build(repositories, output_path="libjava-tree-sitter", arch=None, verbose=Fa
     if arch and platform.system() != "Darwin":
         arch = "64" if "64" in arch else "32"
 
-    output_path = f"{output_path}.{'dylib' if platform.system() == 'Darwin' else 'so'}"
+    ext = "so"
+    if platform.system() == "Darwin":
+        ext = "dylib"
+    elif platform.system() == "Windows":
+        ext = "dll"
+    output_path = f"{output_path}.{ext}"
     here = os.path.dirname(os.path.realpath(__file__))
     env = ""
     if arch:
@@ -89,6 +94,8 @@ def build(repositories, output_path="libjava-tree-sitter", arch=None, verbose=Fa
                 include_dirs.append(os.path.join(os.environ["JAVA_HOME"], "include", "linux"))
             elif platform.system() == "Darwin":
                 include_dirs.append(os.path.join(os.environ["JAVA_HOME"], "include", "darwin"))
+            elif platform.system() == "Windows":
+                include_dirs.append(os.path.join(os.environ["JAVA_HOME"], "include", "windows"))
 
             object_paths.append(
                 compiler.compile(
