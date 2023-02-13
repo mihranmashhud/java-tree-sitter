@@ -89,9 +89,11 @@ def build(repositories, output_path="libjava-tree-sitter", arch=None, verbose=Fa
             if arch:
                 flags += ["-arch", arch] if platform.system() == "Darwin" else [f"-m{arch}"]
 
+            treesitter_include = os.path.join(here, "tree-sitter-cmake" if platform.system() == "Windows" else "tree-sitter", "lib", "include")
+
             include_dirs = [
                 os.path.dirname(source_path),
-                os.path.join(here, "tree-sitter", "lib", "include"),
+                treesitter_include,
                 os.path.join(os.environ["JAVA_HOME"], "include"),
             ]
 
