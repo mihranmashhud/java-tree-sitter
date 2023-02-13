@@ -6,7 +6,6 @@ import distutils.ccompiler
 import distutils.log
 import os
 import platform
-import sys
 import tempfile
 
 
@@ -30,12 +29,15 @@ def build(repositories, output_path="libjava-tree-sitter", arch=None, verbose=Fa
             else f"CFLAGS='-m{arch}' LDFLAGS='-m{arch}'"
         )
 
-    os.system(
-        f"make -C \"{os.path.join(here, 'tree-sitter')}\" clean {'> /dev/null' if not verbose else ''}"
-    )
-    os.system(
-        f"{env} make -C \"{os.path.join(here, 'tree-sitter')}\" {'> /dev/null' if not verbose else ''}"
-    )
+    if platform.system() != "Windows":
+        os.system(
+            f"make -C \"{os.path.join(here, 'tree-sitter')}\" clean {'> /dev/null' if not verbose else ''}"
+        )
+        os.system(
+            f"{env} make -C \"{os.path.join(here, 'tree-sitter')}\" {'> /dev/null' if not verbose else ''}"
+        )
+    else:
+        os.system(f"cmake \"{os.path.join(here, 'tree-sitter-cmake')}\"")
 
     cpp = False
     source_paths = [
@@ -54,6 +56,8 @@ def build(repositories, output_path="libjava-tree-sitter", arch=None, verbose=Fa
             source_paths.append(scanner_cc)
         elif os.path.exists(scanner_c):
             source_paths.append(scanner_c)
+
+        print(f"TS Path: {repository}")
 
         compiler.define_macro(
             f"TS_LANGUAGE_{os.path.split(repository.rstrip('/'))[1].split('tree-sitter-')[-1].replace('-', '_').upper()}",
