@@ -75,6 +75,7 @@ def build(repositories, output_path="libjava-tree-sitter", arch=None, verbose=Fa
     if max(source_mtimes) <= output_mtime:
         return False
 
+    treesitter_path = os.path.join(here, "tree-sitter-cmake" if platform.system() == "Windows" else "tree-sitter")
     with tempfile.TemporaryDirectory(suffix="tree_sitter_language") as out_dir:
         object_paths = []
         for source_path in source_paths:
@@ -89,11 +90,9 @@ def build(repositories, output_path="libjava-tree-sitter", arch=None, verbose=Fa
             if arch:
                 flags += ["-arch", arch] if platform.system() == "Darwin" else [f"-m{arch}"]
 
-            treesitter_include = os.path.join(here, "tree-sitter-cmake" if platform.system() == "Windows" else "tree-sitter", "lib", "include")
-
             include_dirs = [
                 os.path.dirname(source_path),
-                treesitter_include,
+                os.path.join(treesitter_path, "lib", "include"),
                 os.path.join(os.environ["JAVA_HOME"], "include"),
             ]
 
@@ -124,8 +123,8 @@ def build(repositories, output_path="libjava-tree-sitter", arch=None, verbose=Fa
             object_paths,
             output_path,
             extra_preargs=extra_preargs,
-            extra_postargs=[os.path.join(here, "tree-sitter", "libtree-sitter.a")],
-            library_dirs=[os.path.join(here, "tree-sitter")],
+            extra_postargs=[os.path.join(treesitter_path, "libtree-sitter.a")],
+            library_dirs=[treesitter_path],
         )
 
     return True
